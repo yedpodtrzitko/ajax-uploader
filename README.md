@@ -18,7 +18,7 @@ Basic uploader
 * ...just upload data and that's all
 * *selInputWrapper have to be inside form or to be form itself (always)*
 
-<pre>
+```
 <script>
 	new AjaxUploader({
 		selInputWrapper: ".input_wrapper"
@@ -29,7 +29,7 @@ Basic uploader
 		<input type="file" name="image"/>
 	</div>
 </form>
-</pre>
+```
 
 
 Uploader with status messages
@@ -37,7 +37,7 @@ Uploader with status messages
 
 * display messages while upload
 
-<pre>
+```
 <script>
 	new AjaxUploader({
 		selInputWrapper: ".input_wrapper",
@@ -53,7 +53,7 @@ Uploader with status messages
 	<div class="alert">Shows sucess/progress/alert informations</div>
 	<div class="progress">Progress bar while uploading</div>
 </div>
-</pre>
+```
 
 
 Uploader with response canvas
@@ -61,7 +61,7 @@ Uploader with response canvas
 
 * provides canvas to display data from response
 
-<pre>
+```
 <script>
 	new AjaxUploader({
 		selInputWrapper: ".input_wrapper",
@@ -86,7 +86,7 @@ Uploader with response canvas
 
 	-->
 </div>
-</pre>
+```
 
 
 Object options
