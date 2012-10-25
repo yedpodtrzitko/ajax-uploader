@@ -162,6 +162,3 @@ class AjaxUploader
     @uploadFileHook()
     @deleteFileHook()
 
-
-(exports ? this).AjaxUploader = (config) ->
-	new AjaxUploader(config)
