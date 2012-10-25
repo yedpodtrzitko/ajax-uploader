@@ -19,20 +19,6 @@ class AjaxUploader
     beforeUpload: false
     }
 
-  constructor: (config) ->
-    for one of config
-      @opts[one] = config[one]
-
-    @canvasItems = {}
-    @uploadIframe = false
-
-    @init()
-
-  init: ->
-    #@uploadFileHook()
-    @deleteFileHook()
-    false
-
   deleteFileHook: ->
     $(@opts.selThumbnails).on 'click', 'input.delete', (e) =>
       @deletePhoto e.target
@@ -72,9 +58,17 @@ class AjaxUploader
         break
     cookieValue
 
+  uploadFileHook: ->
+    $('input[type=file]', @opts.selInputWrapper).on 'change', (ev) =>
+      if ev.target.value
+        @uploadFile ev.target
+
   uploadFile: (input) ->
     iframeName = @createIframe()
     res = if @opts.beforeUpload then @opts.beforeUpload(input) else @beforeUpload(input)
+    if not res
+      return
+
     if @opts.selFormMirror
       #chrome doesn't allow to clone enfilled input[type=file] -> clone and move original
       cloned = $(input).clone true
@@ -87,29 +81,31 @@ class AjaxUploader
     if not @uploadIframe
       iframeName = 'upload_' + (Math.random() * 100000)
       $(@opts.selInputWrapper).closest('form').attr 'target', iframeName
-      iframe = $('<iframe name="{#iframeName}" style="position:absolute;top:-9999px;" />').appendTo('body')
-      iframe.load () ->
+      iframe = $("<iframe name='#{iframeName}' style='position:absolute;top:-9999px;' />").appendTo 'body'
+      iframe.load () =>
         iframeContent = iframe[0].contentWindow.document.body.textContent
         if iframeContent
           if @opts.onUpload
-            @opts.onUpload(iframeContent)
+            @opts.onUpload iframeContent
           else
-            @onUpload(iframeContent)
+            @onUpload iframeContent
       @uploadIframe = iframe
 
     @uploadIframe.attr 'name'
 
   getCanvasItems: (idx) ->
-    if not @canvasItems.length
+    if not idx or idx not in ['alert', 'progress']
+       return @canvasItems
+
+    if idx not in @canvasItems
       canvas = $(@opts.selMessages)
-      for one in ['alert', 'progress']
-        item = canvas.find (".#{one}")
-        if not item.length
-          canvas.append $("<div class='#{one}' style='display:none;'/>")
+      item = canvas.find ".#{idx}"
+      if not item.length
+        item = $("<div class='#{idx}' style='display:none;'/>")
+        canvas.append item
 
-      @canvasItems[one] = item
-
-    if idx then @canvasItems[idx] else @canvasItems
+      @canvasItems[idx] = item
+    @canvasItems[idx]
 
   beforeUpload: (input) ->
     filename = input.value.split(/[\/\\]/).pop()
@@ -121,16 +117,16 @@ class AjaxUploader
     if not @opts.selMessages
       return
 
-    classes = [error, info, success, warning]
-    alert = @getCanvasItems 'alert'
+    classes = ['error', 'info', 'success', 'warning']
+    alert_node = @getCanvasItems 'alert'
 
     for one in classes
-      alert.removeClass "alert-#{one}"
+      alert_node.removeClass "alert-#{one}"
 
     if msgClass in classes
-      alert.addClass "alert-{#msgClass}"
+      alert_node.addClass "alert-#{msgClass}"
 
-    alert.html(msg).show()
+    alert_node.html(msg).show()
 
   onUpload: (iframeContent) ->
     $("input[type=file]", @opts.selInputWrapper).val ""
@@ -155,3 +151,17 @@ class AjaxUploader
 
     if iframeJSON.file.html
       $(@opts.selThumbnails).append iframeJSON.file.html
+
+  constructor: (config) ->
+    @opts = {}
+    for obj in [@defaults, config]
+        @opts[key] = val for key, val of obj
+
+    @canvasItems = {}
+    @uploadIframe = false
+    @uploadFileHook()
+    @deleteFileHook()
+
+
+(exports ? this).AjaxUploader = (config) ->
+	new AjaxUploader(config)
