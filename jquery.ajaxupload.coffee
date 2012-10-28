@@ -21,12 +21,8 @@ class AjaxUploader
 
   deleteFileHook: ->
     $(@opts.selThumbnails).on 'click', 'input.delete', (e) =>
-      @deletePhoto e.target
+      @deleteFile e.target
       false
-
-  deleteFileNode: ->
-    confirm @opts.msgDeleteConfirm
-    false
 
   deleteFile: (input) ->
     if not confirm @opts.msgDeleteConfirm
@@ -35,11 +31,11 @@ class AjaxUploader
     $.ajax {
     url: $(input).data('url'),
     type: "POST",
-    beforeSend: (xhr) ->
+    beforeSend: (xhr) =>
       if @opts.djangoCsrf
         xhr.setRequestHeader "X-CSRFToken", @getCsrfToken()
-        false
-    success: () ->
+        true
+    success: () =>
       $(input).closest(@opts.selThumnailWrapper).remove()
       false
     }
@@ -138,7 +134,7 @@ class AjaxUploader
     try
       iframeJSON = $.parseJSON iframeContent
     catch err
-      @showMsg @opts.msgUploadError 'error'
+      @showMsg @opts.msgUploadError, 'error'
       return
 
     if iframeJSON.status isnt 'success'
@@ -161,4 +157,3 @@ class AjaxUploader
     @uploadIframe = false
     @uploadFileHook()
     @deleteFileHook()
-
