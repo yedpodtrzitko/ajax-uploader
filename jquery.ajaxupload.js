@@ -98,7 +98,7 @@ AjaxUploader = (function() {
       _this = this;
     if (!this.uploadIframe) {
       iframeName = 'upload_' + (Math.random() * 100000);
-      $(this.opts.selInputWrapper).closest('form').attr('target', iframeName);
+      $(this.opts.selFormMirror).closest('form').attr('target', iframeName);
       iframe = $("<iframe name='" + iframeName + "' style='position:absolute;top:-9999px;' />").appendTo('body');
       iframe.load(function() {
         var iframeContent;
