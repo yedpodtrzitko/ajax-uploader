@@ -76,7 +76,7 @@ class AjaxUploader
   createIframe: ->
     if not @uploadIframe
       iframeName = 'upload_' + (Math.random() * 100000)
-      $(@opts.selInputWrapper).closest('form').attr 'target', iframeName
+      $(@opts.selFormMirror).closest('form').attr 'target', iframeName
       iframe = $("<iframe name='#{iframeName}' style='position:absolute;top:-9999px;' />").appendTo 'body'
       iframe.load () =>
         iframeContent = iframe[0].contentWindow.document.body.textContent
